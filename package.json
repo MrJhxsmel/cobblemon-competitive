@@ -9,6 +9,10 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@pkmn/dex": "^0.11.0",
+    "@pkmn/sets": "^7.0.0",
+    "@pkmn/sim": "^0.11.0",
+    "motion": "^14.12.0",
     "next": "16.4.6",
     "react": "19.3.0",
     "react-dom": "19.3.0"
