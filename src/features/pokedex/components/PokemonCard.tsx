@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { motion } from 'motion/react';
 import type { CompPokemon } from '../lib/dex';
 
@@ -8,6 +9,7 @@ const typeColors: Record<string, string> = {
   Water: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
   Grass: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30',
   Electric: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
+  Poison: 'bg-purple-500/20 text-purple-400 border-purple-500/30',
   Dragon: 'bg-indigo-500/20 text-indigo-400 border-indigo-500/30',
   Steel: 'bg-slate-500/20 text-slate-300 border-slate-500/30',
   Fairy: 'bg-pink-500/20 text-pink-400 border-pink-500/30',
@@ -15,6 +17,8 @@ const typeColors: Record<string, string> = {
 };
 
 export default function PokemonCard({ pokemon }: { pokemon: CompPokemon }) {
+  const [imgSrc, setImgSrc] = useState(pokemon.spriteUrl);
+
   return (
     <motion.div
       whileHover={{ y: -4, scale: 1.02 }}
@@ -40,10 +44,15 @@ export default function PokemonCard({ pokemon }: { pokemon: CompPokemon }) {
 
       <div className="h-28 flex items-center justify-center my-3">
         <img
-          src={pokemon.spriteUrl}
+          src={imgSrc}
           alt={pokemon.name}
           className="max-h-24 object-contain filter drop-shadow-[0_4px_8px_rgba(0,0,0,0.5)]"
           loading="lazy"
+          onError={() => {
+            // Si el GIF animado falla, carga el sprite estático oficial de Showdown
+            const fallback = `https://play.pokemonshowdown.com/sprites/dex/${pokemon.name.toLowerCase().replace(/[^a-z0-9]/g, '')}.png`;
+            setImgSrc(fallback);
+          }}
         />
       </div>
 

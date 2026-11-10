@@ -18,18 +18,24 @@ export interface CompPokemon {
 }
 
 export function getCompetitivePokedex(): CompPokemon[] {
-  // Obtenemos los Pokémon totalmente evolucionados o viables en el meta
   return Dex.species.all()
-    .filter((p) => p.isNonstandard === null && p.baseStats.hp > 0)
-    .slice(0, 150) // Límite inicial paginado para ultra-rendimiento
-    .map((p) => ({
-      num: p.num,
-      name: p.name,
-      types: p.types,
-      baseStats: p.baseStats,
-      bst: Object.values(p.baseStats).reduce((a, b) => a + b, 0),
-      abilities: Object.values(p.abilities),
-      // URL optimizada consumida externamente (sin meter imágenes al repo)
-      spriteUrl: `https://play.pokemonshowdown.com/sprites/ani/${p.name.toLowerCase().replace(/[^a-z0-9]/g, '')}.gif`,
-    }));
+    .filter((p) => {
+      // Excluir formas cosméticas que no cambian stats competitivos (como los Pikachu con gorra)
+      const isCosmeticForm = p.battleOnly || (p.forme && ['Original', 'Hoenn', 'Sinnoh', 'Unova', 'Kalos', 'Alola', 'Partner', 'World'].includes(p.forme));
+      return p.isNonstandard === null && p.baseStats.hp > 0 && !isCosmeticForm;
+    })
+    .slice(0, 150)
+    .map((p) => {
+      // Normalizar el slug para la URL de sprites
+      const cleanName = p.name.toLowerCase().replace(/[^a-z0-9]/g, '');
+      return {
+        num: p.num,
+        name: p.name,
+        types: p.types,
+        baseStats: p.baseStats,
+        bst: Object.values(p.baseStats).reduce((a, b) => a + b, 0),
+        abilities: Object.values(p.abilities),
+        spriteUrl: `https://play.pokemonshowdown.com/sprites/ani/${cleanName}.gif`,
+      };
+    });
 }
